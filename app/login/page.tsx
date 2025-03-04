@@ -70,7 +70,7 @@ export default function LoginPage() {
 
   return (
     <div className="container">
-      <div className="flex flex-col justify-center items-center w-full sm:w-[400px] space-y-6">
+      <div className="flex flex-col justify-center items-center w-full space-y-6">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
             Entrar no Sistema
