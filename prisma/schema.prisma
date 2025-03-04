@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  FUNCIONARIO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  cpf       String?  @unique
+  image     String?
+  role      UserRole @default(FUNCIONARIO)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  vendas    Venda[]
+}
+
+model Categoria {
+  id        String    @id @default(cuid())
+  nome      String
+  produtos  Produto[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Produto {
+  id          String       @id @default(cuid())
+  nome        String
+  codigo      String       @unique
+  descricao   String?
+  preco       Float
+  estoque     Int          @default(0)
+  estoqueMin  Int          @default(5)
+  imagem      String?
+  categoriaId String
+  categoria   Categoria    @relation(fields: [categoriaId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  vendaItens  VendaItem[]
+}
+
+model Venda {
+  id         String      @id @default(cuid())
+  data       DateTime    @default(now())
+  valorTotal Float
+  status     String      @default("Concluída")
+  pagamento  String
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  itens      VendaItem[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model VendaItem {
+  id        String   @id @default(cuid())
+  vendaId   String
+  produtoId String
+  venda     Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto   Produto  @relation(fields: [produtoId], references: [id])
+  quantidade Int
+  precoUnit Float
+  subtotal  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([vendaId])
+  @@index([produtoId])
+}
+
